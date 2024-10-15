@@ -1,0 +1,30 @@
+#VRML_SIM R2023b utf8
+# Describe the functionality of your PROTO here.
+
+
+PROTO Top_box [
+    field SFVec3f  translation 0.25 -0.15 0.15
+    field SFString name "Piston_top1"
+]
+{
+Solid {
+  translation IS translation
+  children [
+    DEF Top_box Shape {
+      appearance PBRAppearance {
+        baseColor 0 0 1
+        metalness 0
+      }
+      geometry Box {
+        size 0.1 0.1 0.1
+      }
+    }
+  ]
+  name IS name
+  boundingObject USE Top_box
+  physics Physics {
+    density 10
+  }
+}
+
+}
