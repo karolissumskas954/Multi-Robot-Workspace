@@ -1,56 +1,70 @@
 import socket
 import threading
 import time
+from move_order import data
 
 runing = True
 clients = {}
 
 def handle_client(conn, addr):
-    print(f"Connected by {addr}")
     time.sleep(0.1)
-    
     identifier = conn.recv(1024).decode('utf-8')
     clients[identifier] = conn
-    # clients[identifier] = addr
-
-    while True:
-        try:
-            data = conn.recv(1024)
-            if not data:
+    print(f"Connected by {addr}")
+    def process_data():
+        while True:
+            try:
+                data = conn.recv(1024)
+                if not data:
+                    break
+                
+                # message = data.decode('utf-8')  
+                # response = "Received message from: " + identifier
+                time.sleep(0.5)
+                move_cubes(identifier)
+            except BlockingIOError:
+                pass
+            except ConnectionResetError:
+                # print(f"Connection reset by client {identifier}")
                 break
 
-            message = data.decode('utf-8')  
-            # print(f"Received message from {identifier}: {message}")
-
-            response = "Received message from: " + identifier
-            if identifier == 'Robot0_0':
-                send_message('0.03', identifier, conn)
-                
-            if identifier == 'Robot1_0':
-                send_message('0.09', identifier, conn)
-                
-            
+        # print(f"Connection closed with {identifier}")
+        del clients[identifier]
+        conn.close()
+    data_thread = threading.Thread(target=process_data)
+    data_thread.start()
+  
+def move_cubes(identifier):
+    for item in data:
+        if item['robot'] == identifier:
+            send_message(item['position'], identifier)
+            print(f"Message sent to : {identifier}")
         
-        except ConnectionResetError:
-            # print(f"Connection reset by client {identifier}")
-            break
+    # if identifier == 'Robot0_0':
+    #     send_message('0.03', identifier)
+    # if identifier == 'Robot0_1':
+    #     send_message('0.09', identifier)
+    # if identifier == 'Robot0_2':
+    #     send_message('0.1', identifier)
+    # if identifier == 'Robot7_7':
+    #     send_message('0.1', identifier)
+    # if identifier == 'Robot0_8':
+    #     send_message('0.1', identifier)
+ 
 
-    # print(f"Connection closed with {identifier}")
-    del clients[identifier]
-    conn.close()
-    
-def send_message(message, identifier, conn):
+def send_message(message, identifier):
     target_conn = clients.get(identifier)
     # print(target_conn)
     if target_conn:
         target_conn.sendall(message.encode('utf-8'))
+        # print('Message sent')
     else:
         print(f"Client {identifier} not found")
 def shutdown_handler(server_socket):
     global runing
     while True:
         try:
-            time.sleep(1)
+            time.sleep(0.1)
         except KeyboardInterrupt:
             print("Received shutdown signal")
             print("Server shutting down...")
@@ -77,6 +91,7 @@ def main():
         conn, addr = server_socket.accept()
         thread = threading.Thread(target=handle_client, args=(conn, addr))
         thread.start()  
+        
         
     shutdown_thread.join()
 
