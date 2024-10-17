@@ -2,41 +2,12 @@
 from controller import Supervisor
 import re
 
-# TIME_STEP = 32
-# robot = Supervisor()
-# root_node = robot.getRoot()
-# children_field = root_node.getField('children')
-
-# i = 0
-# while robot.step(TIME_STEP) != -1:
-    
-#     if i == 0:
-#         children_field.importMFNodeFromString(-1, 
-#                                               '''DEF Piston_bot1 Piston_bot {
-#                                                 translation 0.1 0.1 0.04 
-#                                                 name "Robot1"
-#                                                 }
-#                                                 ''')
-#         children_field.importMFNodeFromString(-1, 
-#                                               '''DEF Piston_bot2 Piston_bot {
-#                                                 translation 0.1 0.201 0.04 
-#                                                 name "Robot2"
-#                                                 }
-#                                                 ''')
-
-#         children_field.importMFNodeFromString(-1, 
-#                                               '''Top_box { 
-#                                               translation 0.1 0.1 0.15
-#                                               name "Box_1"
-#                                               }''')
-#         children_field.importMFNodeFromString(-1, '''Top_box { 
-#                                               translation 0.1 0.201 0.15
-#                                               name "Box_2"
-#                                               }''')
-#     i += 1
-
-
 TIME_STEP = 32
+num_rows = 9
+num_cols = 9
+initial_translation = (0.1, 0.1, 0.04)
+spacing = 0.11
+name_prefix = "Robot"
 robot = Supervisor()
 root_node = robot.getRoot()
 children_field = root_node.getField('children')
@@ -81,13 +52,6 @@ def create_robot_instances_square(num_rows, num_cols, initial_translation, spaci
             box_definitions.append(box_definition)
 
     return robot_definitions, box_definitions
-
-# Example usage:
-num_rows = 9
-num_cols = 9
-initial_translation = (0.1, 0.1, 0.04)
-spacing = 0.11
-name_prefix = "Robot"
 
 robot_definitions, box_definitions = create_robot_instances_square(num_rows, num_cols, initial_translation, spacing, name_prefix)
 
